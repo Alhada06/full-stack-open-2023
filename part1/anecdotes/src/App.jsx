@@ -18,10 +18,17 @@ const App = () => {
   };
 
   const [selected, setSelected] = useState(0);
-
+  const [votes, setVotes] = useState(new Uint8Array(anecdotes.length));
+  const vote = () => {
+    const tempVotes = [...votes];
+    tempVotes[selected] += 1;
+    setVotes(tempVotes);
+  };
   return (
     <div>
       <div>{anecdotes[selected]}</div>
+      <div>has {votes[selected]} votes</div>
+      <button onClick={() => vote()}>vote</button>
       <button onClick={() => setSelected(getRandomAnecdoteIndex())}>
         next anecdote
       </button>
