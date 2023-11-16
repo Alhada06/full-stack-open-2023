@@ -21,9 +21,14 @@ const Course = ({ course }) => (
   <div>
     <Header course={course} />
     <Content parts={course.parts} />
-    {/* <Total parts={course.parts} /> */}
+    <Total sum={sum(course.parts)} />
   </div>
 );
+const sum = (parts) => {
+  return parts.reduce((sum, part) => {
+    return sum + part.exercises;
+  }, 0);
+};
 
 const App = () => {
   const course = {
