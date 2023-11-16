@@ -1,15 +1,22 @@
 import { useState } from "react";
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
+  const [persons, setPersons] = useState([
+    { name: "Arto Hellas", number: "040-123456" },
+  ]);
   const [newName, setNewName] = useState("");
+  const [newNumber, setNewNumber] = useState("");
   const handleNewNameChange = (event) => {
     setNewName(event.target.value);
+  };
+  const handleNewNumberChange = (event) => {
+    setNewNumber(event.target.value);
   };
   const addPerson = (event) => {
     event.preventDefault();
     const newPersonObject = {
       name: newName,
+      number: newNumber,
     };
     if (
       persons.filter((person) => person.name === newPersonObject.name).length
@@ -18,6 +25,7 @@ const App = () => {
     } else {
       setPersons(persons.concat(newPersonObject));
       setNewName("");
+      setNewNumber("");
     }
   };
   return (
@@ -28,15 +36,21 @@ const App = () => {
           name: <input onChange={handleNewNameChange} value={newName} />
         </div>
         <div>
+          number: <input onChange={handleNewNumberChange} value={newNumber} />
+        </div>
+        <div>
           <button type="submit">add</button>
         </div>
       </form>
       <h2>Numbers</h2>
 
       {persons.map((person, i) => (
-        <p key={i}>{person.name}</p>
+        <p key={i}>
+          {person.name}:{person.number}
+        </p>
       ))}
       <div>debug: {newName}</div>
+      <div>debug: {newNumber}</div>
     </div>
   );
 };
