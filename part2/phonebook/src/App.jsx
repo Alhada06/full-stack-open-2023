@@ -1,5 +1,38 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 
+const Filter = ({ handleNewSearch, searchParam }) => {
+  return (
+    <div>
+      filter shown with <input onChange={handleNewSearch} value={searchParam} />
+    </div>
+  );
+};
+
+const PersonForm = (props) => {
+  return (
+    <form onSubmit={props.addPerson}>
+      <div>
+        name:{" "}
+        <input onChange={props.handleNewNameChange} value={props.newName} />
+      </div>
+      <div>
+        number:{" "}
+        <input onChange={props.handleNewNumberChange} value={props.newNumber} />
+      </div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  );
+};
+
+const Persons = ({ persons }) =>
+  persons.map((person, i) => (
+    <p key={i}>
+      {person.name}:{person.number}
+    </p>
+  ));
 const App = () => {
   const [persons, setPersons] = useState([
     { name: "Arto Hellas", number: "040-123456", id: 1 },
@@ -49,36 +82,21 @@ const App = () => {
     );
   };
   const phonebook = searching ? search() : persons;
+
   return (
     <div>
       <h2>Phonebook</h2>
-
-      <div>
-        filter shown with{" "}
-        <input onChange={handleNewSearch} value={searchParam} />
-      </div>
-
+      <Filter searchParam={searchParam} handleNewSearch={handleNewSearch} />
       <h2>add a new</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input onChange={handleNewNameChange} value={newName} />
-        </div>
-        <div>
-          number: <input onChange={handleNewNumberChange} value={newNumber} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm
+        addPerson={addPerson}
+        handleNewNameChange={handleNewNameChange}
+        handleNewNumberChange={handleNewNumberChange}
+        newName={newName}
+        newNumber={newNumber}
+      />
       <h2>Numbers</h2>
-
-      {phonebook.map((person, i) => (
-        <p key={i}>
-          {person.name}:{person.number}
-        </p>
-      ))}
-      <div>debug: {newName}</div>
-      <div>debug: {newNumber}</div>
+      <Persons persons={phonebook} />
     </div>
   );
 };
