@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
-import axios from "axios";
 
+import personsService from "../services/persons";
 const Filter = ({ handleNewSearch, searchParam }) => {
   return (
     <div>
@@ -42,9 +42,7 @@ const App = () => {
   const [searching, setSearching] = useState(false);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((response) => setPersons(response.data));
+    personsService.getAll().then((response) => setPersons(response.data));
   });
 
   const handleNewNameChange = (event) => {
@@ -72,9 +70,11 @@ const App = () => {
     ) {
       alert(`${newName} is already added to phonebook`);
     } else {
-      setPersons(persons.concat(newPersonObject));
-      setNewName("");
-      setNewNumber("");
+      personsService.create(newPersonObject).then((res) => {
+        setPersons(persons.concat(res.data));
+        setNewName("");
+        setNewNumber("");
+      });
     }
   };
 
