@@ -28,10 +28,11 @@ const PersonForm = (props) => {
   );
 };
 
-const Persons = ({ persons }) =>
+const Persons = ({ persons, handleDelete }) =>
   persons.map((person, i) => (
     <p key={i}>
       {person.name}:{person.number}
+      <button onClick={handleDelete.bind(null, person.id)}>delete</button>
     </p>
   ));
 const App = () => {
@@ -57,6 +58,12 @@ const App = () => {
       setSearching(true);
     } else {
       setSearching(false);
+    }
+  };
+  const handleDelete = (id) => {
+    if (window.confirm("do you really want to delete ?")) {
+      console.log(id);
+      personsService.destroy(id).then((res) => console.log(res.data));
     }
   };
   const addPerson = (event) => {
@@ -98,7 +105,7 @@ const App = () => {
         newNumber={newNumber}
       />
       <h2>Numbers</h2>
-      <Persons persons={phonebook} />
+      <Persons persons={phonebook} handleDelete={handleDelete} />
     </div>
   );
 };

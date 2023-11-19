@@ -8,5 +8,7 @@ const getAll = () => {
 const create = (newObject) => {
   return axios.post(baseUrl, newObject);
 };
-
-export default { getAll: getAll, create: create };
+const destroy = (id) => {
+  return axios.delete(`${baseUrl}/${id}`);
+};
+export default { getAll: getAll, create: create, destroy: destroy };
