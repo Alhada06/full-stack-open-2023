@@ -35,16 +35,29 @@ const Persons = ({ persons, handleDelete }) =>
       <button onClick={handleDelete.bind(null, person)}>delete</button>
     </p>
   ));
+
+const Notification = ({ message, isError }) => {
+  if (message === null) {
+    return null;
+  }
+
+  return <div className={isError ? "error" : "success"}>{message}</div>;
+};
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchParam, setSearchParam] = useState("");
   const [searching, setSearching] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
-    personsService.getAll().then((response) => setPersons(response.data));
-  });
+    personsService.getAll().then((response) => {
+      setPersons(response.data);
+      console.log("get");
+    });
+  }, []);
 
   const handleNewNameChange = (event) => {
     setNewName(event.target.value);
@@ -63,7 +76,14 @@ const App = () => {
   const handleDelete = (person) => {
     if (window.confirm(`do you really want to delete ${person.name} ?`)) {
       console.log(person.id);
-      personsService.destroy(person.id).then((res) => console.log(res.data));
+      personsService.destroy(person.id).then(() => {
+        setPersons(persons.filter((p) => p.name !== person.name));
+        setMessage(`Removed  ${person.name}`);
+        setIsError(false);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
+      });
     }
   };
   const addPerson = (event) => {
@@ -82,12 +102,36 @@ const App = () => {
           `${newPersonObject.name} is already added to the phonebook, replace the old number with the new one ?`
         )
       )
-        personsService.update(existingObjec[0].id, newPersonObject);
+        personsService
+          .update(existingObjec[0].id, newPersonObject)
+          .then(() => {
+            setNewName("");
+            setNewNumber("");
+            setMessage(`Updated  ${newPersonObject.name}`);
+            setIsError(false);
+            setTimeout(() => {
+              setMessage(null);
+            }, 5000);
+          })
+          .catch(() => {
+            setMessage(
+              `Information of ${newPersonObject.name} has already been removed from the server. `
+            );
+            setIsError(true);
+            setTimeout(() => {
+              setMessage(null);
+            }, 5000);
+          });
     } else {
       personsService.create(newPersonObject).then((res) => {
         setPersons(persons.concat(res.data));
         setNewName("");
         setNewNumber("");
+        setMessage(`Added  ${newPersonObject.name}`);
+        setIsError(false);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
       });
     }
   };
@@ -102,6 +146,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} isError={isError} />
       <Filter searchParam={searchParam} handleNewSearch={handleNewSearch} />
       <h2>add a new</h2>
       <PersonForm
