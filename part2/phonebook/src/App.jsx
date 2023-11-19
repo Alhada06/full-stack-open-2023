@@ -32,7 +32,7 @@ const Persons = ({ persons, handleDelete }) =>
   persons.map((person, i) => (
     <p key={i}>
       {person.name}:{person.number}
-      <button onClick={handleDelete.bind(null, person.id)}>delete</button>
+      <button onClick={handleDelete.bind(null, person)}>delete</button>
     </p>
   ));
 const App = () => {
@@ -60,10 +60,10 @@ const App = () => {
       setSearching(false);
     }
   };
-  const handleDelete = (id) => {
-    if (window.confirm("do you really want to delete ?")) {
-      console.log(id);
-      personsService.destroy(id).then((res) => console.log(res.data));
+  const handleDelete = (person) => {
+    if (window.confirm(`do you really want to delete ${person.name} ?`)) {
+      console.log(person.id);
+      personsService.destroy(person.id).then((res) => console.log(res.data));
     }
   };
   const addPerson = (event) => {
@@ -72,10 +72,17 @@ const App = () => {
       name: newName,
       number: newNumber,
     };
-    if (
-      persons.filter((person) => person.name === newPersonObject.name).length
-    ) {
-      alert(`${newName} is already added to phonebook`);
+
+    let existingObjec = persons.filter(
+      (person) => person.name === newPersonObject.name
+    );
+    if (existingObjec.length) {
+      if (
+        window.confirm(
+          `${newPersonObject.name} is already added to the phonebook, replace the old number with the new one ?`
+        )
+      )
+        personsService.update(existingObjec[0].id, newPersonObject);
     } else {
       personsService.create(newPersonObject).then((res) => {
         setPersons(persons.concat(res.data));
