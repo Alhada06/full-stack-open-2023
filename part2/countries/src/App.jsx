@@ -24,9 +24,24 @@ const Country = ({ country }) => {
     </div>
   );
 };
+const CountryAccordion = ({ country }) => {
+  const [isOpen, setIsOpen] = useState(false);
 
+  return (
+    <>
+      <button onClick={() => setIsOpen(!isOpen)}>
+        {isOpen ? "close" : "show"}
+      </button>
+      <>{isOpen && <Country country={country} />}</>
+    </>
+  );
+};
 const CountriesList = ({ countries }) => {
-  return countries.map((country, i) => <p key={i}>{country.name.common}</p>);
+  return countries.map((country, i) => (
+    <div key={i}>
+      {country.name.common} <CountryAccordion country={country} />
+    </div>
+  ));
 };
 const Countries = ({ countries, searchParam }) => {
   if (countries.length > 10 && searchParam) {
