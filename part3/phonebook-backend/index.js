@@ -39,6 +39,17 @@ app.get("/info", (request, response) => {
     } people</p><p>${new Date()}</p>`
   );
 });
+app.get("/api/persons/:id", (request, response) => {
+  const id = Number(request.params.id);
+  const person = persons.find((person) => person.id === id);
+
+  if (person) {
+    response.json(person);
+  } else {
+    response.statusMessage = "person's id does not exist";
+    response.status(404).end();
+  }
+});
 
 const PORT = 3001;
 app.listen(PORT, () => {
