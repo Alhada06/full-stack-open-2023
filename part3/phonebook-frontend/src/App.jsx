@@ -93,18 +93,24 @@ const App = () => {
       number: newNumber,
     };
 
-    let existingObjec = persons.filter(
+    let existingObject = persons.filter(
       (person) => person.name === newPersonObject.name
     );
-    if (existingObjec.length) {
+    if (existingObject.length) {
       if (
         window.confirm(
           `${newPersonObject.name} is already added to the phonebook, replace the old number with the new one ?`
         )
       )
         personsService
-          .update(existingObjec[0].id, newPersonObject)
-          .then(() => {
+          .update(existingObject[0].id, newPersonObject)
+          .then((res) => {
+            const updatedPersons = [...persons];
+            const updatePerson = updatedPersons.find(
+              (person) => person.id === res.data.id
+            );
+            updatePerson.number = res.data.number;
+            setPersons(updatedPersons);
             setNewName("");
             setNewNumber("");
             setMessage(`Updated  ${newPersonObject.name}`);
