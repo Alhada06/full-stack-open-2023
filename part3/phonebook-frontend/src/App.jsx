@@ -75,7 +75,6 @@ const App = () => {
   };
   const handleDelete = (person) => {
     if (window.confirm(`do you really want to delete ${person.name} ?`)) {
-      console.log(person.id);
       personsService.destroy(person.id).then(() => {
         setPersons(persons.filter((p) => p.name !== person.name));
         setMessage(`Removed  ${person.name}`);
@@ -119,26 +118,33 @@ const App = () => {
               setMessage(null);
             }, 5000);
           })
-          .catch(() => {
-            setMessage(
-              `Information of ${newPersonObject.name} has already been removed from the server. `
-            );
+          .catch((error) => {
+            setMessage(error.response.data.error);
             setIsError(true);
             setTimeout(() => {
               setMessage(null);
             }, 5000);
           });
     } else {
-      personsService.create(newPersonObject).then((res) => {
-        setPersons(persons.concat(res.data));
-        setNewName("");
-        setNewNumber("");
-        setMessage(`Added  ${newPersonObject.name}`);
-        setIsError(false);
-        setTimeout(() => {
-          setMessage(null);
-        }, 5000);
-      });
+      personsService
+        .create(newPersonObject)
+        .then((res) => {
+          setPersons(persons.concat(res.data));
+          setNewName("");
+          setNewNumber("");
+          setMessage(`Added  ${newPersonObject.name}`);
+          setIsError(false);
+          setTimeout(() => {
+            setMessage(null);
+          }, 5000);
+        })
+        .catch((error) => {
+          setMessage(error.response.data.error);
+          setIsError(true);
+          setTimeout(() => {
+            setMessage(null);
+          }, 5000);
+        });
     }
   };
 
