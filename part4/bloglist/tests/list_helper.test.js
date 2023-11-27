@@ -1,5 +1,11 @@
 const listHelper = require("../utils/list_helper");
 
+test("dummy returns one", () => {
+  const blogs = [];
+
+  const result = listHelper.dummy(blogs);
+  expect(result).toBe(1);
+});
 describe("total likes", () => {
   const listEmpty = [];
   const listWithOneBlog = [
@@ -76,5 +82,49 @@ describe("total likes", () => {
   test("of a bigger list is calculated right", () => {
     const result = listHelper.totalLikes(listWithManyBlogs);
     expect(result).toBe(36);
+  });
+});
+
+describe("favoriteBlog", () => {
+  const listWithManyBlogs = [
+    {
+      title: "React patterns",
+      author: "Michael Chan",
+      likes: 7,
+    },
+    {
+      title: "Go To Statement Considered Harmful",
+      author: "Edsger W. Dijkstra",
+      likes: 5,
+    },
+    {
+      title: "Canonical string reduction",
+      author: "Edsger W. Dijkstra",
+      likes: 12,
+    },
+    {
+      title: "First class tests",
+      author: "Robert C. Martin",
+      likes: 10,
+    },
+    {
+      title: "TDD harms architecture",
+      author: "Robert C. Martin",
+      likes: 0,
+    },
+    {
+      title: "Type wars",
+      author: "Robert C. Martin",
+      likes: 2,
+    },
+  ];
+
+  test("should have 12 likes", () => {
+    const result = listHelper.favoriteBlog(listWithManyBlogs);
+    expect(result).toEqual({
+      title: "Canonical string reduction",
+      author: "Edsger W. Dijkstra",
+      likes: 12,
+    });
   });
 });
