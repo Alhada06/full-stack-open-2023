@@ -46,6 +46,13 @@ test(`blogs are returned as json with the correct amount of blog ${initialBlogs.
 //   expect(response.body[0].title).toBe("React patterns");
 // });
 
+test("Blogs unique identifier is id", async () => {
+  const response = await api.get("/api/blogs");
+  response.body.forEach((blog) => {
+    expect(blog.id).toBeDefined();
+  });
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
