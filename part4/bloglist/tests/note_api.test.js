@@ -71,6 +71,16 @@ test("Creates a new Blog post", async () => {
   expect(postRes.body).toHaveLength(initialBlogs.length + 1);
 });
 
+test("likes is missing from request and defaults to 0", async () => {
+  const newBlogObj = {
+    title: "test blog",
+    author: "test Author",
+    url: "http://test.test",
+  };
+  const postResponse = await api.post("/api/blogs").send(newBlogObj);
+  expect(postResponse.body).toMatchObject({ likes: 0 });
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
