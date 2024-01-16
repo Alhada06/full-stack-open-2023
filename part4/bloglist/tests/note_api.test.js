@@ -111,6 +111,16 @@ test("Deleting a blog check if status code is 204 and if is not in the collectio
   const response = await api.get("/api/blogs");
   expect(response.body).not.toContainEqual(blogToDelete);
 });
+test("Updating a blog check if likes are updated", async () => {
+  const blogToUpdate = await Blog.findOne({});
+
+  const updatedBlog = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send({ likes: blogToUpdate.likes + 3 });
+  expect(updatedBlog.body).toMatchObject({
+    likes: blogToUpdate.likes + 3,
+  });
+});
 
 afterAll(async () => {
   await mongoose.connection.close();
