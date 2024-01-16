@@ -105,6 +105,13 @@ test("Creating a new post without url response is 400", async () => {
     .expect(400);
 });
 
+test("Deleting a blog check if status code is 204 and if is not in the collection", async () => {
+  const blogToDelete = await Blog.findOne({});
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+  const response = await api.get("/api/blogs");
+  expect(response.body).not.toContainEqual(blogToDelete);
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
