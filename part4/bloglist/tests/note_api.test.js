@@ -10,11 +10,13 @@ const initialBlogs = [
   {
     title: "React patterns",
     author: "Michael Chan",
+    url: "http://test1.test",
     likes: 7,
   },
   {
     title: "Go To Statement Considered Harmful",
     author: "Edsger W. Dijkstra",
+    url: "http://test2.test",
     likes: 5,
   },
 ];
@@ -79,6 +81,28 @@ test("likes is missing from request and defaults to 0", async () => {
   };
   const postResponse = await api.post("/api/blogs").send(newBlogObj);
   expect(postResponse.body).toMatchObject({ likes: 0 });
+});
+
+test("Creating a new post without title response is 400", async () => {
+  const newBlogObj = {
+    author: "test Author",
+    url: "http://test.test",
+  };
+  const postResponse = await api
+    .post("/api/blogs")
+    .send(newBlogObj)
+    .expect(400);
+});
+
+test("Creating a new post without url response is 400", async () => {
+  const newBlogObj = {
+    title: "test blog",
+    author: "test Author",
+  };
+  const postResponse = await api
+    .post("/api/blogs")
+    .send(newBlogObj)
+    .expect(400);
 });
 
 afterAll(async () => {
