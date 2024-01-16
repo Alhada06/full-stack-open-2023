@@ -53,6 +53,24 @@ test("Blogs unique identifier is id", async () => {
   });
 });
 
+test("Creates a new Blog post", async () => {
+  const newBlogObj = {
+    title: "test blog",
+    author: "test Author",
+    likes: 1,
+    url: "http://test.test",
+  };
+
+  const saveResponse = await api
+    .post("/api/blogs")
+    .send(newBlogObj)
+    .expect(201);
+
+  expect(saveResponse.body).toMatchObject(newBlogObj);
+  const postRes = await api.get("/api/blogs");
+  expect(postRes.body).toHaveLength(initialBlogs.length + 1);
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
