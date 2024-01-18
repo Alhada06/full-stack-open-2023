@@ -3,19 +3,19 @@ const { response } = require("../app");
 const Blog = require("../models/blog");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
-
+const middleware = require("../utils/middleware");
 blogsRouter.get("/", async (request, response) => {
   const blogs = await Blog.find({}).populate("user", { name: 1, username: 1 });
   response.json(blogs);
 });
 
-blogsRouter.post("/", async (request, response) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: "token invalid" });
-  }
-  const user = await User.findById(decodedToken.id);
-
+blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
+  // const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  // if (!decodedToken.id) {
+  //   return response.status(401).json({ error: "token invalid" });
+  // }
+  const user = request.user;
+  console.log(request.user);
   // const user = await User.findOne({});
   const blog = new Blog({ ...request.body, user: user.id });
 
@@ -25,24 +25,25 @@ blogsRouter.post("/", async (request, response) => {
   response.status(201).json(savedBlog);
 });
 //delete
-blogsRouter.delete("/:id", async (request, response) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: "token invalid" });
-  }
+blogsRouter.delete(
+  "/:id",
+  middleware.userExtractor,
+  async (request, response) => {
+    // const decodedToken = jwt.verify(request.token, process.env.SECRET);
+    // if (!decodedToken.id) {
+    //   return response.status(401).json({ error: "token invalid" });
+    // }
+    const user = request.user;
+    const blogToDelete = await Blog.findById(request.params.id);
 
-  const blogToDelete = await Blog.findById(request.params.id);
-  console.log(blogToDelete.user.toString());
-  console.log(decodedToken.id.toString());
-  console.log(blogToDelete.user.toString() === decodedToken.id.toString());
-  console.log(blogToDelete.user.toString() !== decodedToken.id.toString());
-
-  if (blogToDelete.user.toString() !== decodedToken.id.toString()) {
-    return response.status(401).json({ error: "invalid user" });
+    if (blogToDelete.user.toString() !== user.id.toString()) {
+      return response.status(401).json({ error: "invalid user" });
+    }
+    await Blog.findByIdAndDelete(request.params.id);
+    user.blogs = user.blogs.filter((e) => e !== request.params.id);
+    response.status(204).end();
   }
-  await Blog.findByIdAndDelete(request.params.id);
-  response.status(204).end();
-});
+);
 //update
 blogsRouter.put("/:id", async (request, response) => {
   const { body } = request;
