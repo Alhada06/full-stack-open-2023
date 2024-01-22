@@ -4,6 +4,7 @@ const Blog = require("../models/blog");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const middleware = require("../utils/middleware");
+
 blogsRouter.get("/", async (request, response) => {
   const blogs = await Blog.find({}).populate("user", { name: 1, username: 1 });
   response.json(blogs);
@@ -14,8 +15,13 @@ blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
   // if (!decodedToken.id) {
   //   return response.status(401).json({ error: "token invalid" });
   // }
+
+  const authorization = request.get("authorization");
+  if (!authorization) {
+    return response.status(401).json({ error: "no authorization token" });
+  }
   const user = request.user;
-  console.log(request.user);
+  // console.log(request.user);
   // const user = await User.findOne({});
   const blog = new Blog({ ...request.body, user: user.id });
 
